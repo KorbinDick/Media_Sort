@@ -147,6 +147,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                         if date_taken is None:
                             mod_time = os.path.getmtime(file_path)
                             date_taken = datetime.datetime.fromtimestamp(mod_time)
+                            #needs debugging
                             legacy_jpg = True
 
 
