@@ -48,8 +48,8 @@ import exifread
 ##########################################################################################################################################################
 #   USER ADJUSTABLE VARIABLES   
 #
-# input_folder_path = Path(r"E:\Drives")
-# output_folder_path = Path(r"D:\Drives_Organized")
+input_folder_path = Path(r"E:\Drives")
+output_folder_path = Path(r"D:\Drives_Organized")
 
 oldest_folder_year = 2000
 newest_folder_year = 2026
@@ -65,8 +65,9 @@ newest_folder_year = 2026
 # input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
 # output_folder_path = Path(r"D:\Drives_Organized")
 
-input_folder_path = Path(r"E:\Drives\janet backup files\Pictures\Pictures\2012-09-16 kevins pics")
-output_folder_path = Path(r"D:\temp")
+# testing for legacy jpg
+# input_folder_path = Path(r"E:\Drives\janet backup files\Pictures\Pictures\2012-09-16 kevins pics")
+# output_folder_path = Path(r"D:\temp")
 
 
 
@@ -75,7 +76,7 @@ months = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June":
 non_image_folder = output_folder_path / "non_image"
 log_folder = output_folder_path / "log"
 exit_keys = ['esc']
-
+system_jpg = False
 
 debug_mode = False
 
@@ -147,11 +148,8 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                         if date_taken is None:
                             mod_time = os.path.getmtime(file_path)
                             date_taken = datetime.datetime.fromtimestamp(mod_time)
-                            #needs debugging
-                            legacy_jpg = True
+                            system_jpg = True
 
-
-                                
                     elif ext == ".png":
                         info = img.info
                         date_taken = info.get("Creation Time") or info.get("date:create")
@@ -163,12 +161,14 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                                 date_taken = str(tags["EXIF DateTimeOriginal"])
 
                     print(f"Date Taken: {date_taken}")
-                    image_year = date_taken.split(":")[0]
-                    image_month = date_taken.split(":")[1]
-                    if legacy_jpg:
-                        image_year = date_taken.strftime("-")[0]
-                        image_month = date_taken.strftime("-")[1]
-                        legacy_jpg = False
+                    if system_jpg:
+                        image_year = date_taken.strftime("%Y")
+                        image_month = date_taken.strftime("%m")
+                        system_jpg = False
+                    else:
+                        image_year = date_taken.split(":")[0]
+                        image_month = date_taken.split(":")[1]
+
                     base_path = output_folder_path / image_year / list(months.keys())[int(image_month)-1]
                     name_suffix = f"{file_path.stem}{file_path.suffix}"
                     goal_path = base_path / name_suffix
