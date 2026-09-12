@@ -45,13 +45,14 @@ import time
 import exifread
 
 
-#holds the original path for the folder to be organized
-# input_folder_path = Path(r"E:\Drives")
-# output_folder_path = Path(r"D:\Drives_Organized")
+# holds the original path for the folder to be organized
+input_folder_path = Path(r"E:\Drives")
+output_folder_path = Path(r"D:\Drives_Organized")
+
 # input_folder_path = Path(r"E:\OBX_2026")
 # output_folder_path = Path(r"D:\Drives_Organized")
-input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
-output_folder_path = Path(r"D:\Drives_Organized")
+# input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
+# output_folder_path = Path(r"D:\Drives_Organized")
 
 oldest_folder_year = 2000
 newest_folder_year = 2026
