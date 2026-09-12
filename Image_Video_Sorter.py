@@ -45,25 +45,39 @@ import time
 import exifread
 
 
-# holds the original path for the folder to be organized
-input_folder_path = Path(r"E:\Drives")
-output_folder_path = Path(r"D:\Drives_Organized")
-
-# input_folder_path = Path(r"E:\OBX_2026")
-# output_folder_path = Path(r"D:\Drives_Organized")
-# input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
+##########################################################################################################################################################
+#   USER ADJUSTABLE VARIABLES   
+#
+# input_folder_path = Path(r"E:\Drives")
 # output_folder_path = Path(r"D:\Drives_Organized")
 
 oldest_folder_year = 2000
 newest_folder_year = 2026
+#
+#
+##########################################################################################################################################################
 
+# for testing .AVI and .JPG
+# input_folder_path = Path(r"E:\OBX_2026")
+# output_folder_path = Path(r"D:\Drives_Organized")
+
+# for testing .CR2
+# input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
+# output_folder_path = Path(r"D:\Drives_Organized")
+
+input_folder_path = Path(r"E:\Drives\janet backup files\Pictures\Pictures\2012-09-16 kevins pics")
+output_folder_path = Path(r"D:\temp")
+
+
+
+# static variables for debugging and path creation
 months = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
-
 non_image_folder = output_folder_path / "non_image"
-
 log_folder = output_folder_path / "log"
-
 exit_keys = ['esc']
+
+
+debug_mode = False
 
 # functions
 def confirm_action(prompt):
@@ -120,14 +134,22 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                         
             ext = file_path.suffix.lower()
                     
-            if ext in (".jpg", ".jpeg", ".png", ".cr2"):
+            if ext in (".jpg", ".jpeg", ".png", ".cr2", ".thm"):
                 print(f"[IMAGE] {file_path.relative_to(input_folder_path)}")
                 with Image.open(file_path) as img:
                     date_taken = None
                                 
-                    if ext in (".jpg", ".jpeg"):
+                    if ext in (".jpg", ".jpeg", ".thm"):
                         exif_data = img._getexif()
-                        date_taken = exif_data.get(36867) if exif_data else None
+                        if exif_data is not None:
+                            date_taken = exif_data.get(36867)
+
+                        if date_taken is None:
+                            mod_time = os.path.getmtime(file_path)
+                            date_taken = datetime.datetime.fromtimestamp(mod_time)
+                            legacy_jpg = True
+
+
                                 
                     elif ext == ".png":
                         info = img.info
@@ -142,6 +164,10 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                     print(f"Date Taken: {date_taken}")
                     image_year = date_taken.split(":")[0]
                     image_month = date_taken.split(":")[1]
+                    if legacy_jpg:
+                        image_year = date_taken.strftime("-")[0]
+                        image_month = date_taken.strftime("-")[1]
+                        legacy_jpg = False
                     base_path = output_folder_path / image_year / list(months.keys())[int(image_month)-1]
                     name_suffix = f"{file_path.stem}{file_path.suffix}"
                     goal_path = base_path / name_suffix
@@ -186,7 +212,8 @@ if input_folder_path.exists() and input_folder_path.is_dir():
         except Exception:
             print(f"***FAILED to be sorted: {file_path}")
             print(f"Putting failed content into log folder: {log_folder / f'{file_path.stem}{file_path.suffix}'}\n")
-            time.sleep(3)
+            if debug_mode:
+                time.sleep(3)
             shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
         
