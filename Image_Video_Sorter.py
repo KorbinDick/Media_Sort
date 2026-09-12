@@ -42,13 +42,16 @@ import shutil
 import keyboard
 import os
 import time
+import exifread
 
 
 #holds the original path for the folder to be organized
-input_folder_path = Path(r"E:\Drives")
-output_folder_path = Path(r"D:\Drives_Organized")
+# input_folder_path = Path(r"E:\Drives")
+# output_folder_path = Path(r"D:\Drives_Organized")
 # input_folder_path = Path(r"E:\OBX_2026")
 # output_folder_path = Path(r"D:\Drives_Organized")
+input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
+output_folder_path = Path(r"D:\Drives_Organized")
 
 oldest_folder_year = 2000
 newest_folder_year = 2026
@@ -121,15 +124,20 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                 with Image.open(file_path) as img:
                     date_taken = None
                                 
-                    if ext in (".jpg", ".jpeg", ".cr2"):
+                    if ext in (".jpg", ".jpeg"):
                         exif_data = img._getexif()
                         date_taken = exif_data.get(36867) if exif_data else None
                                 
                     elif ext == ".png":
                         info = img.info
                         date_taken = info.get("Creation Time") or info.get("date:create")
-                                    
-                                
+
+                    elif ext == ".cr2":
+                        with open(file_path, "rb") as f:
+                            tags = exifread.process_file(f, stop_tag="EXIF DateTimeOriginal")
+                            if "EXIF DateTimeOriginal" in tags:
+                                date_taken = str(tags["EXIF DateTimeOriginal"])
+
                     print(f"Date Taken: {date_taken}")
                     image_year = date_taken.split(":")[0]
                     image_month = date_taken.split(":")[1]
@@ -175,8 +183,9 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                 shutil.copy(file_path, goal_path)
             
         except Exception:
-            print(f"***FAILED to be sorted: {file_path}\n")
-            time.sleep(5)
+            print(f"***FAILED to be sorted: {file_path}")
+            print(f"Putting failed content into log folder: {log_folder / f'{file_path.stem}{file_path.suffix}'}\n")
+            time.sleep(3)
             shutil.copy(file_path, log_folder / f"{file_path.stem}{file_path.suffix}")
 
         
