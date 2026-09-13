@@ -29,7 +29,7 @@
 #
 # Other references:
 # https://stackoverflow.com/questions/237079/how-do-i-get-file-creation-and-modification-date-times
-#
+# EXIF (Exchangeable Image File Format)
 #
 #
 ##########################################################################################################################################################
@@ -69,7 +69,13 @@ newest_folder_year = 2026
 # input_folder_path = Path(r"E:\Drives\janet backup files\Pictures\Pictures\2012-09-16 kevins pics")
 # output_folder_path = Path(r"D:\temp")
 
+# testing for .wav, .3gp, .mp3
+# input_folder_path = Path(r"D:\Drives_Organized\non_image")
+# output_folder_path = Path(r"D:\temp")
 
+# testing for WMA and .M4A
+# input_folder_path = Path(r"D:\temp\non_image")
+# output_folder_path = Path(r"D:\temp2")
 
 # static variables for debugging and path creation
 months = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
@@ -161,6 +167,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                                 date_taken = str(tags["EXIF DateTimeOriginal"])
 
                     print(f"Date Taken: {date_taken}")
+                    
                     if system_jpg:
                         image_year = date_taken.strftime("%Y")
                         image_month = date_taken.strftime("%m")
@@ -180,7 +187,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                     print(f"Copying file to: {goal_path}\n")
                     shutil.copy(file_path, goal_path)
                         
-            elif ext in (".mov", ".mp4", ".avi", ".mts"):
+            elif ext in (".mov", ".mp4", ".avi", ".mts", ".3gp", ".mp3", ".wav", ".wma", ".m4a"):
                 print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
                 date_taken = datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
                 print(f"Date Taken: {date_taken}")
