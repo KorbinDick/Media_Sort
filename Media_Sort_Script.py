@@ -57,26 +57,6 @@ newest_folder_year = 2026
 #
 ##########################################################################################################################################################
 
-# for testing .AVI and .JPG
-# input_folder_path = Path(r"E:\OBX_2026")
-# output_folder_path = Path(r"D:\Drives_Organized")
-
-# for testing .CR2
-# input_folder_path = Path(r"E:\Drives\SD_Card_10(Korbin_Graduation)\DCIM\100CANON")
-# output_folder_path = Path(r"D:\Drives_Organized")
-
-# testing for legacy jpg
-# input_folder_path = Path(r"E:\Drives\janet backup files\Pictures\Pictures\2012-09-16 kevins pics")
-# output_folder_path = Path(r"D:\temp")
-
-# testing for .wav, .3gp, .mp3
-# input_folder_path = Path(r"D:\Drives_Organized\non_image")
-# output_folder_path = Path(r"D:\temp")
-
-# testing for WMA and .M4A
-# input_folder_path = Path(r"D:\temp\non_image")
-# output_folder_path = Path(r"D:\temp2")
-
 # static variables for debugging and path creation
 months = {"January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12}
 non_image_folder = output_folder_path / "non_image"
@@ -187,7 +167,7 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                     print(f"Copying file to: {goal_path}\n")
                     shutil.copy(file_path, goal_path)
                         
-            elif ext in (".mov", ".mp4", ".avi", ".mts", ".3gp", ".mp3", ".wav", ".wma", ".m4a"):
+            elif ext in (".mov", ".mp4", ".avi", ".mts", ".3gp", ".wav", ".wma", ".m4a"):
                 print(f"[VIDEO] {file_path.relative_to(input_folder_path)}")
                 date_taken = datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
                 print(f"Date Taken: {date_taken}")
