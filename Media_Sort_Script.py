@@ -24,7 +24,25 @@
 # datetime -> for working with dates and times, formatting, and extracting date information from files
 # reference: https://docs.python.org/3/library/datetime.html
 
-# platform -> for getting information about the operating system
+# sys ->
+# reference :
+
+# shutil
+# reference :
+
+# keyboard ->
+# reference :
+
+# 
+# reference :
+
+# os ->
+# reference :
+
+# time- >
+# reference :
+
+# exifread ->
 # reference :
 #
 # Other references:
@@ -51,10 +69,15 @@ import exifread
 input_folder_path = Path(r"E:\All Pictures\Drives")
 output_folder_path = Path(r"D:\Drives_Organized")
 
+sort_by_year = False
+sort_by_month = False
+
 oldest_folder_year = 2000
 newest_folder_year = 2026
 
-sort_by_month = False
+
+
+debug_mode = False
 #
 #
 ##########################################################################################################################################################
@@ -66,9 +89,9 @@ log_folder = output_folder_path / "log"
 exit_keys = ['esc']
 system_jpg = False
 
-debug_mode = False
 
-# functions
+
+# user functions
 def confirm_action(prompt):
     valid_responses = {"yes": True, "y": True, "no": False, "n": False}
     prompt_suffix = " [Y/n]: "
@@ -87,18 +110,22 @@ def user_interrupt(key):
         os._exit(0) 
 
 
+
+
+
 # main script execution
 if input_folder_path.exists() and input_folder_path.is_dir():
 
     if confirm_action(f"Do you want to create/copy content to path {output_folder_path}?"):
         output_folder_path.mkdir(parents=True, exist_ok=True)
-        for i in range(newest_folder_year - oldest_folder_year + 1):
-            year = oldest_folder_year + i
-            if sort_by_month:
-                for month in months:
-                    month_folder_path = output_folder_path / str(year) / str(month)
-                    month_folder_path.mkdir(parents=True, exist_ok=True)
-                    print(f"Created directory: {month_folder_path}")
+        if sort_by_year:
+            for i in range(newest_folder_year - oldest_folder_year + 1):
+                year = oldest_folder_year + i
+                if sort_by_month:
+                    for month in months:
+                        month_folder_path = output_folder_path / str(year) / str(month)
+                        month_folder_path.mkdir(parents=True, exist_ok=True)
+                        print(f"Created directory: {month_folder_path}")
             else:
                 year_folder_path = output_folder_path / str(year)
                 year_folder_path.mkdir(parents=True, exist_ok=True)
@@ -147,19 +174,23 @@ if input_folder_path.exists() and input_folder_path.is_dir():
 
                     
                     if system_jpg:
-                        image_year = date_taken.strftime("%Y")
+                        if sort_by_year:
+                            image_year = date_taken.strftime("%Y")
                         if sort_by_month:
                             image_month = date_taken.strftime("%m")
                         system_jpg = False
                     else:
-                        image_year = date_taken.split(":")[0]
+                        if sort_by_year:
+                            image_year = date_taken.split(":")[0]
                         if sort_by_month:
                             image_month = date_taken.split(":")[1]
 
-                    if sort_by_month:
+                    if sort_by_year:
+                        base_path = output_folder_path / image_year
+                    elif sort_by_month:
                         base_path = output_folder_path / image_year / list(months.keys())[int(image_month)-1]
                     else:
-                        base_path = output_folder_path / image_year
+                        base_path = output_folder_path
                         
                     name_suffix = f"{file_path.stem}{file_path.suffix}"
                     goal_path = base_path / name_suffix
@@ -173,12 +204,16 @@ if input_folder_path.exists() and input_folder_path.is_dir():
                         
             elif file_extension in (".mov", ".mp4", ".avi", ".mts", ".3gp", ".wav", ".wma", ".m4a"):
                 date_taken = datetime.datetime.fromtimestamp(file_path.stat().st_mtime)
-                video_year = date_taken.strftime("%Y")
-                if sort_by_month:
+                if sort_by_year:
+                    video_year = date_taken.strftime("%Y")
+                    base_path = output_folder_path / video_year
+                elif sort_by_month:
+                    video_year = date_taken.strftime("%Y")
                     video_month = date_taken.strftime("%m")
                     base_path = output_folder_path / video_year / list(months.keys())[int(video_month)-1]
                 else:
-                    base_path = output_folder_path / video_year
+                    base_path = output_folder_path
+                    
                 name_suffix = f"{file_path.stem}{file_path.suffix}"
                 goal_path = base_path / name_suffix
                 copies = 1
